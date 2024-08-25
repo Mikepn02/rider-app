@@ -4,7 +4,7 @@ import RideCard from "@/components/RideCard";
 import { icons, images } from "@/constants";
 import { useFetch } from "@/lib/fetch";
 import { useLocationStore } from "@/store";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { SignedIn, SignedOut, useAuth, useUser } from "@clerk/clerk-expo";
 import * as Location from 'expo-location'
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -22,13 +22,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Page() {
   const { setUserLocation , setDestinationLocation} = useLocationStore()
   const { user } = useUser();
-
+  const { signOut } = useAuth();
   const { data: recentRides , loading} = useFetch(`/(api)/(ride)/${user?.id}`)
 
   const [hasPermission , setHasPermission] = useState(false);
 
 
-  const handleSignout = () => {};
+  const handleSignout = () => {
+    signOut();
+    router.push("/(auth)/sign-in")
+  };
   const handleDestinationPress = (location : {latitude: number , longitude: number , address: string}) => {
     setDestinationLocation(location);
     router.push("/(root)/find-ride");
